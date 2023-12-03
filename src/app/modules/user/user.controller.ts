@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { UserServices } from './user.service';
+import { TUser } from './user.interface';
+import { User } from './user.model';
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -70,8 +72,8 @@ const getAllUsers = async (req: Request, res: Response) => {
 // Get single user by id
 const getSingleUser = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.id;
-
+    const userId = req.params.userId;
+    console.log(userId, 'single');
     const result = await UserServices.getASingleUser(userId);
     res.status(200).json({
       success: true,
@@ -79,7 +81,45 @@ const getSingleUser = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'something went wrong',
+    });
+  }
+};
+
+// Update a single user by id
+const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const userData = req.body;
+
+    const result = await UserServices.updateASingleUser(userId, userData);
+    res.status(200).json({
+      success: true,
+      message: 'Users Updated successfully',
+      data: result,
+    });
+  } catch (error: any) {
     console.log(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'something went wrong',
+    });
+  }
+};
+
+const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const result = await UserServices.deleteUser(userId);
+    res.status(200).json({
+      success: true,
+      message: 'Users Updated successfully',
+      data: result,
+    });
+  } catch (error) {
+    console.log(error, 'helloooooooooooooooooo');
   }
 };
 
@@ -87,4 +127,6 @@ export const UserController = {
   createUser,
   getAllUsers,
   getSingleUser,
+  updateUser,
+  deleteUser,
 };

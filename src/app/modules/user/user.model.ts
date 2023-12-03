@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import {
   TUser,
   TUserAddress,
@@ -18,12 +18,12 @@ const userAddressSchema = new Schema<TUserAddress>({
 });
 
 const userSchema = new Schema<TUser, UserModel>({
-  userId: { type: Number, required: true },
-  username: { type: String, required: true },
+  userId: { type: Number, required: true, unique: true },
+  username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   fullName: { type: userNameSchema, required: true },
   age: { type: Number, required: true },
-  email: { type: String, required: true },
+  email: { type: String, required: true, unique: true, lowercase: true },
   isActive: { type: Boolean, default: true },
   hobbies: { type: [String] },
   address: { type: userAddressSchema, required: true },
@@ -34,10 +34,18 @@ const userSchema = new Schema<TUser, UserModel>({
 //   next();
 // });
 
-userSchema.statics.isUserExists = async function (id: string) {
-  // console.log(mongoose.Types.ObjectId())
-  // const existingUser = await User.find(mongoose.Types.ObjectId(id));
-  // return existingUser;
+// userSchema.statics.isUserExists = async function (userId: string) {
+//   const existingUser = await User.findById({ userId });
+//   return existingUser;
+// };
+userSchema.statics.isUserExists = async function (userId: string) {
+  const existingUser = await User.findOne({ userId });
+  return existingUser;
+};
+
+userSchema.statics.isUserExists = async function (userId) {
+  const existUser = await User.findById(userId);
+  return existUser;
 };
 
 // create a model

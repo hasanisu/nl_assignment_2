@@ -3,7 +3,11 @@ import { User } from './user.model';
 
 // create user
 const createUserIntoDB = async (user: TUser) => {
+  if (await User.isUserExists(String(user.userId))) {
+    throw new Error('User is exist');
+  }
   const result = await User.create(user);
+
   return result;
 };
 
@@ -13,10 +17,26 @@ const getAllUsers = async () => {
   return result;
 };
 
-const getASingleUser = async (id: string) => {
-  const result = await User.findById(id);
-  // const result = await User.aggregate([{ $match: { id: id } }]);
-  console.log(result, 'valo');
+//Get a single user
+const getASingleUser = async (userId: string) => {
+  console.log(userId, 'sigle item');
+  const result = await User.findOne({ userId });
+  return result;
+};
+
+// Update a user
+const updateASingleUser = async (userId: string, userData: TUser) => {
+  const result = await User.findOneAndUpdate(
+    { userId },
+    { $set: userData },
+    { new: true, runValidators: true },
+  );
+
+  return result;
+};
+
+const deleteUser = async (userId: string) => {
+  const result = await User.findByIdAndDelete(userId);
   return result;
 };
 
@@ -24,4 +44,6 @@ export const UserServices = {
   createUserIntoDB,
   getAllUsers,
   getASingleUser,
+  updateASingleUser,
+  deleteUser,
 };
