@@ -3,6 +3,7 @@ import {
   TUser,
   TUserAddress,
   TUserFullName,
+  TOrders,
   UserModel,
 } from './user.interface';
 
@@ -17,6 +18,12 @@ const userAddressSchema = new Schema<TUserAddress>({
   country: { type: String, trim: true, required: true },
 });
 
+const OrdersSchema = new Schema<TOrders>({
+  productName: { type: String, trim: true, required: true },
+  price: { type: Number, required: true },
+  quantity: { type: Number, required: true },
+});
+
 const userSchema = new Schema<TUser, UserModel>({
   userId: { type: Number, required: true, unique: true },
   username: { type: String, required: true, unique: true },
@@ -27,6 +34,7 @@ const userSchema = new Schema<TUser, UserModel>({
   isActive: { type: Boolean, default: true },
   hobbies: { type: [String] },
   address: { type: userAddressSchema, required: true },
+  orders: { type: [OrdersSchema] },
 });
 
 // userSchema.post('find', async function (next) {
@@ -47,6 +55,16 @@ userSchema.statics.isUserExists = async function (userId) {
   const existUser = await User.findById(userId);
   return existUser;
 };
+
+userSchema.statics.isUserExists = async function (userId: string) {
+  const existingUser = await User.deleteOne({ userId });
+  return existingUser;
+};
+
+userSchema.pre('findOne', async function (next) {
+  this.find({ orders: { $push: true } });
+  next();
+});
 
 // create a model
 export const User = model<TUser, UserModel>('User', userSchema);

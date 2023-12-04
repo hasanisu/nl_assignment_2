@@ -1,14 +1,10 @@
 import { Request, Response } from 'express';
 import { UserServices } from './user.service';
-import { TUser } from './user.interface';
-import { User } from './user.model';
 
 const createUser = async (req: Request, res: Response) => {
   try {
     const user = req.body;
-
     const result = await UserServices.createUserIntoDB(user);
-
     const {
       userId,
       username,
@@ -37,10 +33,13 @@ const createUser = async (req: Request, res: Response) => {
       data: data,
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(400).json({
       success: false,
-      message: 'something went wrong',
-      error: error,
+      message: 'User already exist',
+      error: {
+        code: 400,
+        description: 'User already exist!',
+      },
     });
   }
 };
@@ -73,7 +72,6 @@ const getAllUsers = async (req: Request, res: Response) => {
 const getSingleUser = async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId;
-    console.log(userId, 'single');
     const result = await UserServices.getASingleUser(userId);
     res.status(200).json({
       success: true,
@@ -81,9 +79,13 @@ const getSingleUser = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(400).json({
       success: false,
-      message: 'something went wrong',
+      message: 'User not found',
+      error: {
+        code: 400,
+        description: 'User not found!',
+      },
     });
   }
 };
@@ -93,18 +95,20 @@ const updateUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const userData = req.body;
-
     const result = await UserServices.updateASingleUser(userId, userData);
     res.status(200).json({
       success: true,
       message: 'Users Updated successfully',
       data: result,
     });
-  } catch (error: any) {
-    console.log(error);
-    res.status(500).json({
+  } catch (error) {
+    res.status(400).json({
       success: false,
-      message: error.message || 'something went wrong',
+      message: 'User not found',
+      error: {
+        code: 400,
+        description: 'User not found!',
+      },
     });
   }
 };
@@ -112,14 +116,44 @@ const updateUser = async (req: Request, res: Response) => {
 const deleteUser = async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId;
-    const result = await UserServices.deleteUser(userId);
+    await UserServices.deleteUser(userId);
+    res.status(200).json({
+      success: true,
+      message: 'Users deleted successfully',
+      data: null,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: 'User not found',
+      error: {
+        code: 400,
+        description: 'User not found!',
+      },
+    });
+  }
+};
+
+const createOrders = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const userData = req.body;
+    console.log(userData);
+    const result = await UserServices.createOrders(userId, userData);
     res.status(200).json({
       success: true,
       message: 'Users Updated successfully',
       data: result,
     });
   } catch (error) {
-    console.log(error, 'helloooooooooooooooooo');
+    res.status(400).json({
+      success: false,
+      message: 'User not found',
+      error: {
+        code: 400,
+        description: 'User not found!',
+      },
+    });
   }
 };
 
@@ -129,4 +163,5 @@ export const UserController = {
   getSingleUser,
   updateUser,
   deleteUser,
+  createOrders,
 };

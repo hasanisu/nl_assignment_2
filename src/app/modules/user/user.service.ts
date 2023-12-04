@@ -3,11 +3,7 @@ import { User } from './user.model';
 
 // create user
 const createUserIntoDB = async (user: TUser) => {
-  if (await User.isUserExists(String(user.userId))) {
-    throw new Error('User is exist');
-  }
   const result = await User.create(user);
-
   return result;
 };
 
@@ -19,8 +15,10 @@ const getAllUsers = async () => {
 
 //Get a single user
 const getASingleUser = async (userId: string) => {
-  console.log(userId, 'sigle item');
   const result = await User.findOne({ userId });
+  if (!result) {
+    throw new Error('User Does Not Exist');
+  }
   return result;
 };
 
@@ -32,11 +30,31 @@ const updateASingleUser = async (userId: string, userData: TUser) => {
     { new: true, runValidators: true },
   );
 
+  if (!result) {
+    throw new Error('User Does Not Exist');
+  }
   return result;
 };
 
 const deleteUser = async (userId: string) => {
-  const result = await User.findByIdAndDelete(userId);
+  const result = await User.findOneAndDelete({ userId });
+  if (!result) {
+    throw new Error('User Does`t Exist');
+  }
+  return result;
+};
+
+//orders
+const createOrders = async (userId: string, orders: TUser) => {
+  const result = await User.findOneAndUpdate(
+    { userId },
+    { $push: orders },
+    { new: true, runValidators: true },
+  );
+
+  if (!result) {
+    throw new Error('User Does Not Exist');
+  }
   return result;
 };
 
@@ -46,4 +64,5 @@ export const UserServices = {
   getASingleUser,
   updateASingleUser,
   deleteUser,
+  createOrders,
 };
