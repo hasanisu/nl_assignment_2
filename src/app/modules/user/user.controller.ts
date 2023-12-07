@@ -1,10 +1,14 @@
 import { Request, Response } from 'express';
 import { UserServices } from './user.service';
+import userValidationSchema, {
+  ordersValidationSchema,
+} from './user.validation';
 
 const createUser = async (req: Request, res: Response) => {
   try {
     const user = req.body;
-    const result = await UserServices.createUserIntoDB(user);
+    const zodParseData = userValidationSchema.parse(user);
+    const result = await UserServices.createUserIntoDB(zodParseData);
     const {
       userId,
       username,
@@ -137,8 +141,9 @@ const deleteUser = async (req: Request, res: Response) => {
 const createOrders = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    const userData = req.body;
-    await UserServices.createOrders(userId, userData);
+    const orderData = req.body;
+    const zodParseOrderData = ordersValidationSchema.parse(orderData);
+    await UserServices.createOrders(userId, zodParseOrderData);
     res.status(200).json({
       success: true,
       message: 'Order created successfully',

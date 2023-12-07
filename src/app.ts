@@ -11,7 +11,10 @@ app.use(cors());
 app.use('/api/users', UserRoutes);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!');
+  res.status(200).json({
+    success: true,
+    message: 'Welcome to the API of 2nd Assignment',
+  });
 });
 
 export default app;
