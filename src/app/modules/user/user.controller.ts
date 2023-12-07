@@ -138,12 +138,54 @@ const createOrders = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const userData = req.body;
-    console.log(userData);
-    const result = await UserServices.createOrders(userId, userData);
+    await UserServices.createOrders(userId, userData);
     res.status(200).json({
       success: true,
-      message: 'Users Updated successfully',
-      data: result,
+      message: 'Order created successfully',
+      data: null,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: 'User not found',
+      error: {
+        code: 400,
+        description: 'User not found!',
+      },
+    });
+  }
+};
+
+// Get single order by id
+const getSingleUserOrder = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const result = await UserServices.getASingleUser(userId);
+    res.status(200).json({
+      success: true,
+      message: 'Order fetched successfully',
+      data: { orders: result?.orders },
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: 'User not found',
+      error: {
+        code: 400,
+        description: 'User not found!',
+      },
+    });
+  }
+};
+// Get single order total by id
+const getSingleUserOrderTotal = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const result = await UserServices.getASingleUser(userId);
+    res.status(200).json({
+      success: true,
+      message: 'Order fetched successfully',
+      data: { orders: result?.orders },
     });
   } catch (error) {
     res.status(400).json({
@@ -164,4 +206,6 @@ export const UserController = {
   updateUser,
   deleteUser,
   createOrders,
+  getSingleUserOrder,
+  getSingleUserOrderTotal,
 };

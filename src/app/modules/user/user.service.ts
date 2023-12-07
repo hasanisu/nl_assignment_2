@@ -1,4 +1,4 @@
-import { TUser } from './user.interface';
+import { TUser, TOrders } from './user.interface';
 import { User } from './user.model';
 
 // create user
@@ -45,13 +45,27 @@ const deleteUser = async (userId: string) => {
 };
 
 //orders
-const createOrders = async (userId: string, orders: TUser) => {
+const createOrders = async (userId: string, orders: TOrders) => {
   const result = await User.findOneAndUpdate(
     { userId },
-    { $push: orders },
+    { $addToSet: { orders: orders } },
     { new: true, runValidators: true },
   );
 
+  return result;
+};
+
+//Get a single user
+const getASingleUserOrder = async (userId: string) => {
+  const result = await User.findOne({ userId });
+  if (!result) {
+    throw new Error('User Does Not Exist');
+  }
+  return result;
+};
+//Get a single user
+const getASingleUserOrderTotal = async (userId: string) => {
+  const result = await User.findOne({ userId });
   if (!result) {
     throw new Error('User Does Not Exist');
   }
@@ -65,4 +79,6 @@ export const UserServices = {
   updateASingleUser,
   deleteUser,
   createOrders,
+  getASingleUserOrder,
+  getASingleUserOrderTotal,
 };

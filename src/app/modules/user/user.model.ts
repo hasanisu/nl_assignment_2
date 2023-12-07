@@ -46,10 +46,10 @@ const userSchema = new Schema<TUser, UserModel>({
 //   const existingUser = await User.findById({ userId });
 //   return existingUser;
 // };
-userSchema.statics.isUserExists = async function (userId: string) {
-  const existingUser = await User.findOne({ userId });
-  return existingUser;
-};
+// userSchema.statics.isUserExists = async function (userId: string) {
+//   const existingUser = await User.findOne({ userId });
+//   return existingUser;
+// };
 
 userSchema.statics.isUserExists = async function (userId) {
   const existUser = await User.findById(userId);
@@ -61,10 +61,20 @@ userSchema.statics.isUserExists = async function (userId: string) {
   return existingUser;
 };
 
-userSchema.pre('findOne', async function (next) {
-  this.find({ orders: { $push: true } });
+userSchema.pre('aggregate', async function (next) {
+  this.pipeline().unshift({ $match: { orders: { $eq: true } } });
   next();
 });
+
+// userSchema.pre('aggregate', async function (next) {
+//   this.pipeline().unshift(
+//     { $match: { orders: { $av: true } } },
+//     {$match: {price: }}
+
+//     );
+
+//   next();
+// });
 
 // create a model
 export const User = model<TUser, UserModel>('User', userSchema);
