@@ -6,6 +6,8 @@ import {
   TOrders,
   UserModel,
 } from './user.interface';
+import bcrypt from 'bcrypt';
+import config from '../../config';
 
 const userNameSchema = new Schema<TUserFullName>({
   firstName: { type: String, trim: true, required: true },
@@ -37,20 +39,6 @@ const userSchema = new Schema<TUser, UserModel>({
   orders: { type: [OrdersSchema] },
 });
 
-// userSchema.post('find', async function (next) {
-//   this.find({ $match: { fullName: 1 } });
-//   next();
-// });
-
-// userSchema.statics.isUserExists = async function (userId: string) {
-//   const existingUser = await User.findById({ userId });
-//   return existingUser;
-// };
-// userSchema.statics.isUserExists = async function (userId: string) {
-//   const existingUser = await User.findOne({ userId });
-//   return existingUser;
-// };
-
 userSchema.statics.isUserExists = async function (userId) {
   const existUser = await User.findById(userId);
   return existUser;
@@ -66,15 +54,15 @@ userSchema.pre('aggregate', async function (next) {
   next();
 });
 
-// userSchema.pre('aggregate', async function (next) {
-//   this.pipeline().unshift(
-//     { $match: { orders: { $av: true } } },
-//     {$match: {price: }}
-
-//     );
-
-//   next();
-// });
+userSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_round),
+  );
+  next();
+});
 
 // create a model
 export const User = model<TUser, UserModel>('User', userSchema);
