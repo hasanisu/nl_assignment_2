@@ -36,13 +36,16 @@ const createUser = async (req: Request, res: Response) => {
       message: 'User created successfully',
       data: data,
     });
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     res.status(400).json({
       success: false,
-      message: 'User already exist',
+      message: error.issues ? error.issues[0].message : 'User already exist',
       error: {
         code: 400,
-        description: 'User already exist!',
+        description: error.issues
+          ? error.issues[0].path[0]
+          : 'User already exist!',
       },
     });
   }
@@ -143,19 +146,22 @@ const createOrders = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const orderData = req.body;
     const zodParseOrderData = ordersValidationSchema.parse(orderData);
+
     await UserServices.createOrders(userId, zodParseOrderData);
     res.status(200).json({
       success: true,
       message: 'Order created successfully',
       data: null,
     });
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.log(error.issues);
     res.status(400).json({
       success: false,
-      message: 'User not found',
+      message: error.issues ? error.issues[0].message : 'User not found',
       error: {
         code: 400,
-        description: 'User not found!',
+        description: error.issues ? error.issues[0].path[0] : 'User not found'!,
       },
     });
   }
