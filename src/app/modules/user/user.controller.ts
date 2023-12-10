@@ -182,27 +182,6 @@ const getSingleUserOrder = async (req: Request, res: Response) => {
     });
   }
 };
-// Get single order total by id
-const getSingleUserOrderTotal = async (req: Request, res: Response) => {
-  try {
-    const userId = req.params.userId;
-    const result = await UserServices.getASingleUser(userId);
-    res.status(200).json({
-      success: true,
-      message: 'Order fetched successfully',
-      data: { orders: result?.orders },
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: 'User not found',
-      error: {
-        code: 400,
-        description: 'User not found!',
-      },
-    });
-  }
-};
 
 export const UserController = {
   createUser,
@@ -212,5 +191,4 @@ export const UserController = {
   deleteUser,
   createOrders,
   getSingleUserOrder,
-  getSingleUserOrderTotal,
 };

@@ -21,9 +21,13 @@ const userAddressSchema = new Schema<TUserAddress>({
 });
 
 const OrdersSchema = new Schema<TOrders>({
-  productName: { type: String, trim: true, required: true },
-  price: { type: Number, required: true },
-  quantity: { type: Number, required: true },
+  productName: {
+    type: String,
+    trim: true,
+    required: [true, 'Product Name should be string'],
+  },
+  price: { type: Number, required: [true, 'Price should be Number'] },
+  quantity: { type: Number, required: [true, 'Quantity should be Number'] },
 });
 
 const userSchema = new Schema<TUser, UserModel>({

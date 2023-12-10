@@ -51,20 +51,15 @@ const createOrders = async (userId: string, orders: TOrders) => {
     { $addToSet: { orders: orders } },
     { new: true, runValidators: true },
   );
+  if (!result) {
+    throw new Error('User Does Not Exist');
+  }
 
   return result;
 };
 
 //Get a single user
 const getASingleUserOrder = async (userId: string) => {
-  const result = await User.findOne({ userId });
-  if (!result) {
-    throw new Error('User Does Not Exist');
-  }
-  return result;
-};
-//Get a single user
-const getASingleUserOrderTotal = async (userId: string) => {
   const result = await User.findOne({ userId });
   if (!result) {
     throw new Error('User Does Not Exist');
@@ -80,5 +75,4 @@ export const UserServices = {
   deleteUser,
   createOrders,
   getASingleUserOrder,
-  getASingleUserOrderTotal,
 };
