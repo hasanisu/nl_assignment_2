@@ -42,7 +42,7 @@ const createUser = async (req: Request, res: Response) => {
       success: false,
       message: error.issues ? error.issues[0].message : 'User already exist',
       error: {
-        code: 400,
+        code: 404,
         description: error.issues
           ? error.issues[0].path[0]
           : 'User already exist!',
@@ -78,19 +78,39 @@ const getAllUsers = async (req: Request, res: Response) => {
 // Get single user by id
 const getSingleUser = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.userId;
-    const result = await UserServices.getASingleUser(userId);
+    const id = req.params.userId;
+    const result = await UserServices.getASingleUser(id);
+    const {
+      userId,
+      username,
+      fullName,
+      age,
+      email,
+      isActive,
+      hobbies,
+      address,
+    } = result;
+    const data = {
+      userId: userId,
+      userName: username,
+      fullName: fullName,
+      age: age,
+      email: email,
+      isActive: isActive,
+      hobbies: hobbies,
+      address: address,
+    };
     res.status(200).json({
       success: true,
       message: 'Users fetched successfully',
-      data: result,
+      data: data,
     });
   } catch (error) {
     res.status(400).json({
       success: false,
       message: 'User not found',
       error: {
-        code: 400,
+        code: 404,
         description: 'User not found!',
       },
     });
@@ -100,20 +120,41 @@ const getSingleUser = async (req: Request, res: Response) => {
 // Update a single user by id
 const updateUser = async (req: Request, res: Response) => {
   try {
-    const { userId } = req.params;
+    const id = req.params.userId;
+    console.log(id);
     const userData = req.body;
-    const result = await UserServices.updateASingleUser(userId, userData);
+    const result = await UserServices.updateASingleUser(id, userData);
+    const {
+      userId,
+      username,
+      fullName,
+      age,
+      email,
+      isActive,
+      hobbies,
+      address,
+    } = result;
+    const data = {
+      userId: userId,
+      userName: username,
+      fullName: fullName,
+      age: age,
+      email: email,
+      isActive: isActive,
+      hobbies: hobbies,
+      address: address,
+    };
     res.status(200).json({
       success: true,
       message: 'Users Updated successfully',
-      data: result,
+      data: data,
     });
   } catch (error) {
     res.status(400).json({
       success: false,
       message: 'User not found',
       error: {
-        code: 400,
+        code: 404,
         description: 'User not found!',
       },
     });

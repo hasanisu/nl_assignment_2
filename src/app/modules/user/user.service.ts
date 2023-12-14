@@ -1,5 +1,7 @@
 import { TUser, TOrders } from './user.interface';
 import { User } from './user.model';
+import bcrypt from 'bcrypt';
+import config from '../../config';
 
 // create user
 const createUserIntoDB = async (user: TUser) => {
